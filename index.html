@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="css/mikrotik.css">
+    <title>Настройка MikroTik</title>
+  </head>
+  <body>
+    <!-- Блок Header  -->
+    <header>
+      <div class="header__wrapper wrapper">
+        <!-- <h1>Настройка MikroTik</h1> -->
+        <div class="header-nav">
+          <ul>
+            <li><a href="#">Обновление</a></li>
+            <li><a href="#">PPPoE</a></li>
+            <li><a href="#">Wi-Fi</a></li>
+            <li><a href="#">IPTV</a></li>
+            <li><a href="#">Open DNS</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+    <!-- Конец Блока Header  -->
+    <!-- Начало блока Main  -->
+    <main>
+      <div class="main__wrapper wrapper">
+        <hr />
+        <!-- Блок pppoe__block -->
+        <section class="pppoe__block">
+          <h3>2. Настройка PPPoE</h3>
+          <ul>
+            <li>Interfaces — add new — pppoe client</li>
+            <li>Name — <span>имя созданного соединенгия</span></li>
+            <li>Interfaces — <span>выбор WAN интерфейса (например ether1)</span></li>
+            <li>User — <span>имя пользователя</span></li>
+            <li>Password — <span>пароль</span></li>
+            <li>
+              Use peer DNS — 
+            <span>
+              ставим галочку (интернет не будет работать, пока не
+                    выполнить пункт 4)
+            </span> — OK
+            </li>
+          </ul>
+        </section>
+        <hr />
+        <!-- Конец блока pppoe__block -->
+        <!-- Блок wifi__block -->
+        <section class="wifi__block">
+          <h3>3. Настройка Wi-Fi</h3>
+          <ul>
+            <li>
+              Wireless — Interface — нажимаем на wlan1 (в двух диапазонном и для
+              wlan2)
+            </li>
+            <li>SSID — имя Wi-Fi сети — OK</li>
+            <li>Wireless — Security Profiles — нажимаем на default</li>
+            <li>Mode — dinamic keys</li>
+            <li>Authentication Types — WPA2 PSK</li>
+            <li>WPA2 Pre-Shared key — указываем ключ безопасности — OK</li>
+            <li>
+              Важно!: Если при подключении stb, через wi-fi начинаются задержки
+              при пинге, или через wi-fi плохая скорость, то:
+              <ul class="no-marker">
+                <li>Bridge — Filters — Add New</li>
+                <li>Chain — Output</li>
+                <li>Out. Interface — wlanX</li>
+                <li>Packet type — multicast</li>
+                <li>Action — drop</li>
+              </ul>
+            </li>
+          </ul>
+        </section>
+        <hr />
+        <!-- Конец блока wifi__block -->
+        <!-- Начало блока open-dns__block -->
+        <section class="open-dns__block">
+          <h3>4. Настройка Open DNS</h3>
+          <div class="open-dns__item">
+            <ul>
+              <li>IP — Firewall — Filter Rules — Add New</li>
+              <li>Chain — input</li>
+              <li>In intarface — имя pppoe соединения</li>
+              <li>action — Drop — OK</li>
+            </ul>
+          </div>
+          <div class="open-dns__item">
+            <ul>
+              <li>IP — Firewall — Filter Rules — Add New</li>
+              <li>Chain — forward</li>
+              <li>In intarface — имя pppoe соединения</li>
+              <li>action — Drop — OK</li>
+            </ul>
+          </div>
+          <div class="open-dns__item">
+            <ul>
+              <li>IP — Firewall — NAT — Add New</li>
+              <li>Chain — srnat</li>
+              <li>Out intarface — имя pppoe соединения</li>
+              <li>Action — masquerade — OK</li>
+            </ul>
+          </div>
+        </section>
+        <hr />
+        <!-- Конец блока open-dns__block -->
+        <!-- Начало блока iptv__block -->
+        <section iptv__block>
+          <h3>5. Настройка IPTV</h3>
+          <div class="iptv__item">
+            <ul>
+              <li>
+                Routing — IGMP Proxy — Intarface — Add New (Важно! Если нет
+                опции IGMP Proxy, то не выполнен пункт 1)
+              </li>
+              <li>Intarface — выбор WAN интерфейса (например ether1)</li>
+              <li>Alternative subnets — 0.0.0.0/0</li>
+              <li>Upstream — ставим галку — OK</li>
+            </ul>
+          </div>
+          <div class="iptv__item">
+            <ul>
+              <li>Routing — IGMP Proxy — Intarface — Add New</li>
+              <li>Interace — Bridge — OK</li>
+            </ul>
+          </div>
+          <div class="iptv__item">
+            <ul>
+              <li>IP — Firewall — Filter Rules — Add New</li>
+              <li>Chain — input</li>
+              <li>Protocol — UDP</li>
+              <li>Dst. Port — 5000</li>
+              <li>
+                In intarface — выбор WAN интерфейса (например ether1) — OK
+              </li>
+            </ul>
+          </div>
+          <div class="iptv__item">
+            <ul>
+              <li>IP — Firewall — Filter Rules — Add New</li>
+              <li>Chain — input</li>
+              <li>Protocol — IGMP</li>
+              <li>
+                In intarface — выбор WAN интерфейса (например ether1) — OK
+              </li>
+            </ul>
+          </div>
+          <div class="iptv__item">
+            <ul>
+              <li>IP — Firewall — Filter Rules — Add New</li>
+              <li>Chain — forward</li>
+              <li>Protocol — UDP</li>
+              <li>
+                In intarface — выбор WAN интерфейса (например ether1) — OK
+              </li>
+            </ul>
+          </div>
+          <div class="iptv__item">
+            <ul>
+              <li>IP — Firewall — Filter Rules</li>
+              <li>
+                В таблице правил firewall перетягиваем 3 созданных правила
+                (самый низ), в самый верх
+              </li>
+              <li>
+                New Terminal — в новом окне (консоли) вводим поочередно:
+                <ul>
+                  <li>/routing igmp-proxy</li>
+                  <li>set quick-leave=yes</li>
+                </ul>
+              </li>
+              <li>
+                Важно! Если после всех манипуляций при выборе канала пишет
+                «Невозможно открыть поток файл»
+                <ul>
+                  <li>
+                    IP — DHCP Client — DHCP Client — клацаем на строку c именем
+                    интерфейса по умолчанию (например ether1) — Enabled – OK
+                  </li>
+                </ul>
+              </li>
+              <li>
+                Важно! Если выбрали Wan порт отличный от 1-ого порта
+                <ul>
+                  <li>
+                    IP — DHCP Client — DHCP Client — клацаем на имя интерфейса
+                    по умолчанию и выбираем тот, который выбран как WAN
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer></footer>
+  </body>
+</html>
